@@ -7,6 +7,8 @@ composer require luoyy/think-blade
 conig.php:
 ```php
 'template' => [
+        // 模板引擎类型 支持 php think 支持扩展
+        'type' => 'Blade',
         // 视图基础目录（集中式）
         'view_base' => '',
         // 模板起始路径
