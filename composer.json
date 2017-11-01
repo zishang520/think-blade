@@ -1,19 +1,21 @@
 {
-    "name": "terranc/think-blade",
+    "name": "luoyy/think-blade",
     "description": "think blade view engine",
     "license": "Apache2",
+    "homepage": "http://www.luoyy.com",
     "authors": [
         {
-            "name": "terranc",
+            "name": "luoyy",
             "email": "terran.chao@lookfeel.co"
         }
     ],
     "support": {
-        "issues": "https://github.com/terranc/think-blade/issues"
+        "issues": "https://github.com/zishang520/think-blade/issues",
+        "source": "https://github.com/zishang520/think-blade"
     },
     "require": {
         "php": ">=5.4.0",
-        "terranc/blade": "^0.1"
+        "luoyy/blade": "^5.5.0"
     },
     "autoload": {
         "classmap": [

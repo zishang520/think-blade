@@ -2,29 +2,25 @@
 Blade template engine with thinkphp 5. (component & slot support)
 
 # Installation
-composer require terranc/think-blade
+composer require luoyy/think-blade
 
 conig.php:
 ```php
-'template'               => [
-        // 模板引擎类型 支持 php think 支持扩展
-        'type'         => 'Blade',
-        // 模板路径
-        'view_path'    => '',
-        // 模板后缀
-        'view_suffix'  => 'blade.php',
+'template' => [
+        // 视图基础目录（集中式）
+        'view_base' => '',
+        // 模板起始路径
+        'view_path' => '',
         // 模板文件名分隔符
-        'view_depr'    => DS,
-        // 模板引擎普通标签开始标记
-        'tpl_begin'    => '{{',
-        // 模板引擎普通标签结束标记
-        'tpl_end'      => '}}',
-        'tpl_raw_begin'    => '{!!',
-        'tpl_raw_end'    => '{!!',
-        // 标签库标签开始标记
-        'taglib_begin' => '{',
-        // 标签库标签结束标记
-        'taglib_end'   => '}',
+        'view_depr' => DS,
+        // 模板缓存目录
+        'view_cache_path' => RUNTIME_PATH . 'temp' . DS,
+        // 模板文件后缀
+        'view_suffix' => 'blade.php',
+        'cache' => [
+            'cache_subdir' => false,
+            'prefix' => '',
+        ],
     ],
 ```
 
@@ -44,12 +40,21 @@ conig.php:
 			<span class="gap-line"></span>
 			<a href="{{ url('/manage/start/logout') }}" class="confirm item" title="确认要退出吗？">退出</a>
 		</div>
+        {!! $Foo->function() !!}
+        @switch($test)
+        @case(1)
+        1
+        @case(2)
+        2
+        @default
+        2
+        @endswitch
 	</div>
 </header>
 ```
 
 # DOC
 
-https://laravel.com/docs/5.4/blade
+https://laravel.com/docs/5.5/blade
 
-http://d.laravel-china.org/docs/5.4/blade (中文)
+http://d.laravel-china.org/docs/5.5/blade (中文)

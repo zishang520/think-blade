@@ -1,53 +1,48 @@
 <?php
-// +----------------------------------------------------------------------
-// | ThinkPHP [ WE CAN DO IT JUST THINK ]
-// +----------------------------------------------------------------------
-// | Copyright (c) 2006~2017 http://thinkphp.cn All rights reserved.
-// +----------------------------------------------------------------------
-// | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
-// +----------------------------------------------------------------------
-// | Author: liu21st <liu21st@gmail.com>
-// +----------------------------------------------------------------------
 
 namespace think\view\driver;
 
+use luoyy\Blade\Compilers\BladeCompiler;
+use luoyy\Blade\Engines\CompilerEngine;
+use luoyy\Blade\Engines\EngineResolver;
+use luoyy\Blade\Factory;
+use luoyy\Blade\Filesystem;
+use luoyy\Blade\FileViewFinder;
 use think\App;
 use think\exception\TemplateNotFoundException;
 use think\Loader;
 use think\Log;
 use think\Request;
-use terranc\Blade\Compilers\BladeCompiler;
-use terranc\Blade\Engines\CompilerEngine;
-use terranc\Blade\FileViewFinder;
-use terranc\Blade\Factory;
 
 class Blade
 {
+    private static $factory;
     // 模板引擎实例
     private $template;
     // 模板引擎参数
     protected $config = [
         // 视图基础目录（集中式）
-        'view_base'   => '',
-        // 是否开启模板编译缓存,设为false则每次都会重新编译
-        'tpl_cache'          => true,
+        'view_base' => '',
         // 模板起始路径
-        'view_path'   => '',
-        'tpl_begin'   => '{{',
-        'tpl_end'   => '}}',
-        'tpl_raw_begin'   => '{!!',
-        'tpl_raw_end'   => '!!}',
-        'view_cache_path'   => RUNTIME_PATH . 'temp' . DS, // 模板缓存目录
+        'view_path' => '',
+        // 模板文件名分隔符
+        'view_depr' => DS,
+        // 模板缓存目录
+        'view_cache_path' => RUNTIME_PATH . 'temp' . DS,
         // 模板文件后缀
         'view_suffix' => 'blade.php',
+        'cache' => [
+            'cache_subdir' => false,
+            'prefix' => '',
+        ],
     ];
     public function __construct($config = [])
     {
         $this->config($config);
     }
 
-
-    private function boot($config = []) {
+    private function boot($config = [])
+    {
         $this->config = array_merge($this->config, $config);
         if (empty($this->config['view_path'])) {
             $this->config['view_path'] = App::$modulePath . 'view' . DS;
@@ -56,20 +51,22 @@ class Blade
             // 使用子目录
             $this->config['view_cache_path'] = $this->config['view_cache_path'] . DS . substr($this->config['view_cache_path'], 0, 2) . DS . substr($this->config['view_cache_path'], 2);
         }
-        if ($this->options['cache']['prefix']) {
+        if ($this->config['cache']['prefix']) {
             $name = $this->config['cache']['prefix'] . DS . $name;
         }
+        if (!is_dir($this->config['view_cache_path'])) {
+            mkdir($this->config['view_cache_path']);
+        }
+        $file = new Filesystem;
+        $compiler = new BladeCompiler($file, $this->config['view_cache_path']);
 
-        $compiler = new BladeCompiler($this->config['view_cache_path'], $this->config['tpl_cache']);
-        $compiler->setContentTags($this->config['tpl_begin'], $this->config['tpl_end'], true);
-        $compiler->setContentTags($this->config['tpl_begin'], $this->config['tpl_end'], false);
-        $compiler->setRawTags($this->config['tpl_raw_begin'], $this->config['tpl_raw_end'], false);
-
-        $engine = new CompilerEngine($compiler);
-        $finder = new FileViewFinder([$this->config['view_path']], [$this->config['view_suffix'], 'tpl']);
-
-        // 实例化 Factory
-        $this->template = new Factory($engine, $finder);
+        $resolver = new EngineResolver;
+        $resolver->register('blade', function () use ($compiler) {
+            return new CompilerEngine($compiler);
+        });
+        $factory = new Factory($resolver, new FileViewFinder($file, [$this->config['view_path']], [$this->config['view_suffix']]));
+        $factory->addExtension('tpl', 'blade');
+        $this->template = $factory;
     }
 
     /**
@@ -145,14 +142,14 @@ class Blade
         if ($this->config['view_base']) {
             // 基础视图目录
             $module = isset($module) ? $module : $request->module();
-            $path   = $this->config['view_base'] . ($module ? $module . DS : '');
+            $path = $this->config['view_base'] . ($module ? $module . DS : '');
         } else {
             $path = isset($module) ? APP_PATH . $module . DS . 'view' . DS : $this->config['view_path'];
         }
 
         $depr = $this->config['view_depr'];
         if (0 !== strpos($template, '/')) {
-            $template   = str_replace(['/', ':'], $depr, $template);
+            $template = str_replace(['/', ':'], $depr, $template);
             $controller = Loader::parseName($request->controller());
             if ($controller) {
                 if ('' == $template) {
@@ -182,7 +179,7 @@ class Blade
         } elseif (is_null($value)) {
             return $this->config[$name];
         } else {
-            $this->config[$name]   = $value;
+            $this->config[$name] = $value;
         }
         $this->boot();
     }
