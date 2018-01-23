@@ -4,7 +4,8 @@ Blade template engine with thinkphp 5. (component & slot support)
 # Installation
 composer require luoyy/think-blade
 
-conig.php:
+config.php:
+
 ```php
 'template' => [
         // 模板引擎类型 支持 php think 支持扩展
@@ -14,9 +15,9 @@ conig.php:
         // 模板起始路径
         'view_path' => '',
         // 模板文件名分隔符
-        'view_depr' => DS,
+        'view_depr' => DIRECTORY_SEPARATOR,
         // 模板缓存目录
-        'view_cache_path' => RUNTIME_PATH . 'temp' . DS,
+        'view_cache_path' => RUNTIME_PATH . 'temp' . DIRECTORY_SEPARATOR,
         // 模板文件后缀
         'view_suffix' => 'blade.php',
         'cache' => [
@@ -24,6 +25,33 @@ conig.php:
             'prefix' => '',
         ],
     ],
+```
+
+### tp5.1
+
+- use ^3.0
+
+template.php
+
+```php
+return [
+        // 模板引擎类型 支持 php think 支持扩展
+        'type' => 'Blade',
+        // 视图基础目录（集中式）
+        'view_base' => '',
+        // 模板起始路径
+        'view_path' => '',
+        // 模板文件名分隔符
+        'view_depr' => DIRECTORY_SEPARATOR,
+        // 模板缓存目录
+        'view_cache_path' => Env::get('RUNTIME_PATH') . 'temp' . DIRECTORY_SEPARATOR,
+        // 模板文件后缀
+        'view_suffix' => 'blade.php',
+        'cache' => [
+            'cache_subdir' => false,
+            'prefix' => '',
+        ],
+    ];
 ```
 
 # Usage
@@ -44,12 +72,15 @@ conig.php:
 		</div>
         {!! $Foo->function() !!}
         @switch($test)
-        @case(1)
-        1
-        @case(2)
-        2
-        @default
-        2
+            @case(1)
+            1
+            @brank
+            @case(2)
+            2
+            @brank
+            @default
+            2
+            @brank
         @endswitch
 	</div>
 </header>
