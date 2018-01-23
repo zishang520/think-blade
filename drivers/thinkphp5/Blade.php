@@ -8,11 +8,12 @@ use luoyy\Blade\Engines\EngineResolver;
 use luoyy\Blade\Factory;
 use luoyy\Blade\Filesystem;
 use luoyy\Blade\FileViewFinder;
-use think\App;
 use think\exception\TemplateNotFoundException;
+use think\facade\App;
+use think\facade\Env;
+use think\facade\Log;
+use think\facade\Request;
 use think\Loader;
-use think\Log;
-use think\Request;
 
 class Blade
 {
@@ -39,7 +40,7 @@ class Blade
             // 模板文件名分隔符
             'view_depr' => DIRECTORY_SEPARATOR,
             // 模板缓存目录
-            'view_cache_path' => RUNTIME_PATH . 'temp' . DIRECTORY_SEPARATOR,
+            'view_cache_path' => Env::get('RUNTIME_PATH') . 'temp' . DIRECTORY_SEPARATOR,
             // 模板文件后缀
             'view_suffix' => 'blade.php',
             'cache' => [
@@ -55,7 +56,7 @@ class Blade
     {
         $this->config = array_merge($this->config, $config);
         if (empty($this->config['view_path'])) {
-            $this->config['view_path'] = App::$modulePath . 'view' . DIRECTORY_SEPARATOR;
+            $this->config['view_path'] = App::getModulePath() . 'view' . DIRECTORY_SEPARATOR;
         }
         if ($this->config['cache']['cache_subdir']) {
             // 使用子目录
@@ -115,7 +116,7 @@ class Blade
             throw new TemplateNotFoundException('template not exists:' . $template, $template);
         }
         // 记录视图信息
-        App::$debug && Log::record('[ VIEW ] ' . $template . ' [ ' . var_export(array_keys($data), true) . ' ]', 'info');
+        App::isDebug() && Log::record('[ VIEW ] ' . $template . ' [ ' . var_export(array_keys($data), true) . ' ]', 'info');
         echo $this->template->file($template, $data, $mergeData)->render();
     }
 
@@ -142,8 +143,6 @@ class Blade
      */
     private function parseTemplate($template)
     {
-        // 分析模板文件规则
-        $request = Request::instance();
         // 获取视图根目录
         if (strpos($template, '@')) {
             // 跨模块调用
@@ -151,20 +150,20 @@ class Blade
         }
         if ($this->config['view_base']) {
             // 基础视图目录
-            $module = isset($module) ? $module : $request->module();
+            $module = isset($module) ? $module : Request::module();
             $path = $this->config['view_base'] . ($module ? $module . DIRECTORY_SEPARATOR : '');
         } else {
-            $path = isset($module) ? APP_PATH . $module . DIRECTORY_SEPARATOR . 'view' . DIRECTORY_SEPARATOR : $this->config['view_path'];
+            $path = isset($module) ? Env::get('APP_PATH') . $module . DIRECTORY_SEPARATOR . 'view' . DIRECTORY_SEPARATOR : $this->config['view_path'];
         }
 
         $depr = $this->config['view_depr'];
         if (0 !== strpos($template, '/')) {
             $template = str_replace(['/', ':'], $depr, $template);
-            $controller = Loader::parseName($request->controller());
+            $controller = Loader::parseName(Request::controller());
             if ($controller) {
                 if ('' == $template) {
                     // 如果模板文件名为空 按照默认规则定位
-                    $template = str_replace('.', DIRECTORY_SEPARATOR, $controller) . $depr . $request->action();
+                    $template = str_replace('.', DIRECTORY_SEPARATOR, $controller) . $depr . Request::action();
                 } elseif (false === strpos($template, $depr)) {
                     $template = str_replace('.', DIRECTORY_SEPARATOR, $controller) . $depr . $template;
                 }
