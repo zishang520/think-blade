@@ -20,24 +20,34 @@ class Blade
     // 模板引擎实例
     private $template;
     // 模板引擎参数
-    protected $config = [
-        // 视图基础目录（集中式）
-        'view_base' => '',
-        // 模板起始路径
-        'view_path' => '',
-        // 模板文件名分隔符
-        'view_depr' => DS,
-        // 模板缓存目录
-        'view_cache_path' => RUNTIME_PATH . 'temp' . DS,
-        // 模板文件后缀
-        'view_suffix' => 'blade.php',
-        'cache' => [
-            'cache_subdir' => false,
-            'prefix' => '',
-        ],
-    ];
+    protected $config = [];
+
+    /**
+     * [__construct 构建]
+     * @Author    ZiShang520@gmail.com
+     * @DateTime  2018-01-23T13:12:03+0800
+     * @copyright (c) ZiShang520 All Rights Reserved
+     * @param     array $config [description]
+     */
     public function __construct($config = [])
     {
+        $this->config = [
+            // 视图基础目录（集中式）
+            'view_base' => '',
+            // 模板起始路径
+            'view_path' => '',
+            // 模板文件名分隔符
+            'view_depr' => DIRECTORY_SEPARATOR,
+            // 模板缓存目录
+            'view_cache_path' => RUNTIME_PATH . 'temp' . DIRECTORY_SEPARATOR,
+            // 模板文件后缀
+            'view_suffix' => 'blade.php',
+            'cache' => [
+                'cache_subdir' => false,
+                'prefix' => '',
+            ],
+            'tpl_replace_string' => [],
+        ];
         $this->config($config);
     }
 
@@ -45,17 +55,17 @@ class Blade
     {
         $this->config = array_merge($this->config, $config);
         if (empty($this->config['view_path'])) {
-            $this->config['view_path'] = App::$modulePath . 'view' . DS;
+            $this->config['view_path'] = App::$modulePath . 'view' . DIRECTORY_SEPARATOR;
         }
         if ($this->config['cache']['cache_subdir']) {
             // 使用子目录
-            $this->config['view_cache_path'] = $this->config['view_cache_path'] . DS . substr($this->config['view_cache_path'], 0, 2) . DS . substr($this->config['view_cache_path'], 2);
+            $this->config['view_cache_path'] = $this->config['view_cache_path'] . DIRECTORY_SEPARATOR . substr($this->config['view_cache_path'], 0, 2) . DIRECTORY_SEPARATOR . substr($this->config['view_cache_path'], 2);
         }
         if ($this->config['cache']['prefix']) {
-            $name = $this->config['cache']['prefix'] . DS . $name;
+            $name = $this->config['cache']['prefix'] . DIRECTORY_SEPARATOR . $name;
         }
         if (!is_dir($this->config['view_cache_path'])) {
-            mkdir($this->config['view_cache_path']);
+            mkdir($this->config['view_cache_path'], 0755, true);
         }
         $file = new Filesystem;
         $compiler = new BladeCompiler($file, $this->config['view_cache_path']);
@@ -142,9 +152,9 @@ class Blade
         if ($this->config['view_base']) {
             // 基础视图目录
             $module = isset($module) ? $module : $request->module();
-            $path = $this->config['view_base'] . ($module ? $module . DS : '');
+            $path = $this->config['view_base'] . ($module ? $module . DIRECTORY_SEPARATOR : '');
         } else {
-            $path = isset($module) ? APP_PATH . $module . DS . 'view' . DS : $this->config['view_path'];
+            $path = isset($module) ? APP_PATH . $module . DIRECTORY_SEPARATOR . 'view' . DIRECTORY_SEPARATOR : $this->config['view_path'];
         }
 
         $depr = $this->config['view_depr'];
@@ -154,9 +164,9 @@ class Blade
             if ($controller) {
                 if ('' == $template) {
                     // 如果模板文件名为空 按照默认规则定位
-                    $template = str_replace('.', DS, $controller) . $depr . $request->action();
+                    $template = str_replace('.', DIRECTORY_SEPARATOR, $controller) . $depr . $request->action();
                 } elseif (false === strpos($template, $depr)) {
-                    $template = str_replace('.', DS, $controller) . $depr . $template;
+                    $template = str_replace('.', DIRECTORY_SEPARATOR, $controller) . $depr . $template;
                 }
             }
         } else {
