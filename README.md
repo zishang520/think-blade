@@ -8,23 +8,16 @@ conig.php:
 
 ```php
 'template' => [
-        // 模板引擎类型 支持 php think 支持扩展
-        'type' => 'Blade',
-        // 视图基础目录（集中式）
-        'view_base' => '',
+        // 模板目录名
+        'view_dir_name' => 'view',
         // 模板起始路径
-        'view_path' => '',
+        'view_path'     => '',
+        // 模板后缀
+        'view_suffix'   => 'blade.php',
         // 模板文件名分隔符
-        'view_depr' => DIRECTORY_SEPARATOR,
-        // 模板缓存目录
-        'view_cache_path' => RUNTIME_PATH . 'temp' . DIRECTORY_SEPARATOR,
-        // 模板文件后缀
-        'view_suffix' => 'blade.php',
-        'cache' => [
-            'cache_subdir' => false,
-            'prefix' => '',
-        ],
-        'tpl_replace_string' => [],
+        'view_depr'     => DIRECTORY_SEPARATOR,
+        // 是否开启模板编译缓存,设为false则每次都会重新编译
+        'cache_path' => ''
     ],
 ```
 
@@ -59,6 +52,6 @@ conig.php:
 
 # DOC
 
-https://laravel.com/docs/5.5/blade
+https://laravel.com/docs/7.x/blade
 
-http://d.laravel-china.org/docs/5.5/blade (中文)
+https://learnku.com/docs/laravel/7.x/blade/7470 (中文)

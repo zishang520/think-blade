@@ -3,25 +3,21 @@
     "description": "think blade view engine",
     "license": "Apache-2.0",
     "homepage": "http://www.luoyy.com",
-    "authors": [
-        {
-            "name": "luoyy",
-            "email": "zishang520@gmail.com"
-        }
-    ],
+    "authors": [{
+        "name": "luoyy",
+        "email": "zishang520@gmail.com"
+    }],
     "support": {
         "issues": "https://github.com/zishang520/think-blade/issues",
         "source": "https://github.com/zishang520/think-blade"
     },
     "require": {
-        "php": ">=5.4.0",
-        "luoyy/blade": "^5.5"
+        "php": "^7.2.5",
+        "luoyy/blade": "^7.0"
     },
     "autoload": {
-        "classmap": [
-            {
-                "think\\view\\driver\\Blade": "drivers/thinkphp5/Blade.php"
-            }
-        ]
+        "classmap": [{
+            "think\\view\\driver\\Blade": "drivers/Blade.php"
+        }]
     }
 }
