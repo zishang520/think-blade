@@ -24,15 +24,17 @@ class Blade implements TemplateHandlerInterface
     // 模板引擎参数
     protected $config = [
         // 模板目录名
-        'view_dir_name' => 'view',
+        'view_dir_name'   => 'view',
         // 模板起始路径
-        'view_path'     => '',
+        'view_path'       => '',
         // 模板后缀
-        'view_suffix'   => 'blade.php',
+        'view_suffix'     => 'blade.php',
+        // 扩展的模板文件名
+        'view_ext_suffix' => ['php', 'css', 'html'],
         // 模板文件名分隔符
-        'view_depr'     => DIRECTORY_SEPARATOR,
-        // 是否开启模板编译缓存,设为false则每次都会重新编译
-        'cache_path' => ''
+        'view_depr'       => DIRECTORY_SEPARATOR,
+        // 模板缓存路径，不设置则在runtime/temp下
+        'cache_path'      => ''
     ];
 
     public function __construct(App $app, array $config = [])
@@ -66,7 +68,7 @@ class Blade implements TemplateHandlerInterface
             return new CompilerEngine($compiler);
         });
 
-        $finder = new FileViewFinder($file, [$this->app->getRootPath() . $this->config['view_dir_name'] . DIRECTORY_SEPARATOR], [$this->config['view_suffix']]);
+        $finder = new FileViewFinder($file, [$this->app->getRootPath() . $this->config['view_dir_name'] . DIRECTORY_SEPARATOR], [$this->config['view_suffix']] + $this->config['view_ext_suffix']);
 
         $this->template = new Factory($resolver, $finder);
     }
