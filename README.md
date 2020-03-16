@@ -7,7 +7,8 @@ composer require luoyy/think-blade
 view.php:
 
 ```php
-'template' => [
+<?php
+return [
         // 模板引擎类型使用Blade
         'type'            => 'Blade',
         // 模板目录名
