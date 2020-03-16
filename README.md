@@ -4,20 +4,24 @@ Blade template engine with thinkphp 5. (component & slot support)
 # Installation
 composer require luoyy/think-blade
 
-conig.php:
+view.php:
 
 ```php
 'template' => [
+        // 模板引擎类型使用Blade
+        'type'            => 'Blade',
         // 模板目录名
-        'view_dir_name' => 'view',
-        // 模板起始路径
-        'view_path'     => '',
+        'view_dir_name'   => 'view',
+        // 模板起始路径 不设置则自动寻找
+        'view_path'       => '',
         // 模板后缀
-        'view_suffix'   => 'blade.php',
+        'view_suffix'     => 'blade.php',
+        // 扩展的模板文件名
+        'view_ext_suffix' => ['php', 'css', 'html'],
         // 模板文件名分隔符
-        'view_depr'     => DIRECTORY_SEPARATOR,
-        // 是否开启模板编译缓存,设为false则每次都会重新编译
-        'cache_path' => ''
+        'view_depr'       => DIRECTORY_SEPARATOR,
+        // 模板缓存路径，不设置则在runtime/temp下
+        'cache_path'      => ''
     ],
 ```
 
