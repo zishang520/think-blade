@@ -1,5 +1,5 @@
 # Think-Blade
-Blade template engine with thinkphp 5. (component & slot support)
+Blade template engine with thinkphp 6. (component & slot support)
 
 # Installation
 composer require luoyy/think-blade
